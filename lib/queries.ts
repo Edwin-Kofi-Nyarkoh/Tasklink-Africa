@@ -1,8 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "./api"
+interface WorkerFilters {
+  search?: string
+  location?: string
+  minRate?: number
+  maxRate?: number
+  availability?: "available" | "busy"
+  verified?: boolean
+  serviceId?: string[] // or string if you support only one
+}
+
 
 // Workers queries
-export const useWorkers = (filters?: any) => {
+export const useWorkers = (filters?: WorkerFilters) => {
   return useQuery({
     queryKey: ["workers", filters],
     queryFn: async () => {
@@ -11,6 +21,7 @@ export const useWorkers = (filters?: any) => {
     },
   })
 }
+
 
 export const useWorker = (id: string) => {
   return useQuery({

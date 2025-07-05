@@ -19,12 +19,13 @@ export async function GET() {
       },
     })
 
+
+    // ✅ Return real data if available
     return NextResponse.json(services)
   } catch (error) {
     console.error("Error fetching services:", error)
     return NextResponse.json({ error: "Failed to fetch services" }, { status: 500 })
-  }
-}
+  }}
 
 export async function POST(request: NextRequest) {
   try {

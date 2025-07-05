@@ -135,7 +135,7 @@ export function SignUpForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md pt-24">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-center">Create account</CardTitle>
         <CardDescription className="text-center">Join TaskLink to find trusted professionals</CardDescription>

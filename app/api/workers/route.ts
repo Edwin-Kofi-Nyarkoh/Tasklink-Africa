@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (location) {
+    if (location && location.trim() !=="all") {
       where.user = {
         city: {
           contains: location,
@@ -58,13 +58,17 @@ export async function GET(request: NextRequest) {
       ]
     }
 
-    if (serviceId) {
-      where.services = {
-        some: {
-          serviceId: serviceId,
-        },
-      }
-    }
+    const serviceIds = searchParams.getAll("serviceId")
+if (serviceIds.length > 0) {
+  where.services = {
+    some: {
+      serviceId: {
+        in: serviceIds,
+      },
+    },
+  }
+}
+
 
     const workers = await prisma.workerProfile.findMany({
       where,
@@ -108,6 +112,7 @@ export async function GET(request: NextRequest) {
         },
       ],
     })
+
 
     return NextResponse.json(workers)
   } catch (error) {

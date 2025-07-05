@@ -122,9 +122,10 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
     error: "/auth/error",
   },
-  events: {
-    async createUser({ user }) {
-      console.log("New user created:", user.email)
-    },
-  },
+  secret: process.env.NEXTAUTH_SECRET,
+  // events: {
+  //   async createUser({ user }) {
+  //     console.log("New user created:", user.email)
+  //   },
+  // },
 }
