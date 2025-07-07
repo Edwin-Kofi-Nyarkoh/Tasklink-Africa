@@ -1,8 +1,6 @@
 "use client";
-export const dynamic = "force-dynamic";
-export const dynamicParams = true;
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function Loader() {
@@ -85,7 +83,7 @@ function FailedAnimation() {
   );
 }
 
-export default function VerifyBookings() {
+function VerifyBookingsInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<"loading" | "success" | "failed">(
@@ -142,5 +140,13 @@ export default function VerifyBookings() {
       {status === "success" && <SuccessAnimation />}
       {status === "failed" && <FailedAnimation />}
     </div>
+  );
+}
+
+export default function VerifyBookings() {
+  return (
+    <Suspense fallback={<Loader />}>
+      <VerifyBookingsInner />
+    </Suspense>
   );
 }
