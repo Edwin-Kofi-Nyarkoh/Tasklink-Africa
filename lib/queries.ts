@@ -108,6 +108,17 @@ export const useServices = () => {
   })
 }
 
+export const useHelpArticle = (id: string) => {
+  return useQuery({
+    queryKey: ["help", "article", id],
+    enabled: !!id,
+    queryFn: async () => {
+      const { data } = await api.get(`/help/articles/${id}`)
+      return data
+    },
+  })
+}
+
 // Bookings queries
 export const useBookings = (filters?: any) => {
   return useQuery({

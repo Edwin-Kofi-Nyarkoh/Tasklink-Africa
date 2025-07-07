@@ -1,9 +1,9 @@
 import nodemailer from "nodemailer"
 
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number.parseInt(process.env.SMTP_PORT || "587"),
-  secure: false,
+  secure: false, // Set to true if you're using port 465
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -42,13 +42,12 @@ export async function sendBookingEmail(booking: any) {
       `,
     })
   } catch (error) {
-    console.error("Error sending booking email:", error)
+    console.error("❌ Error sending booking email:", error)
   }
 }
 
 export async function sendBookingSMS(booking: any) {
   try {
-    // This would integrate with Hellosend SMS API
     const smsData = {
       to: booking.worker.user.phone,
       message: `New booking from TaskLink! Service: ${booking.service.name}, Date: ${new Date(
@@ -56,9 +55,9 @@ export async function sendBookingSMS(booking: any) {
       ).toLocaleDateString()}, Ticket: ${booking.ticketNumber}`,
     }
 
-    // Implement Hellosend SMS integration here
-    console.log("SMS would be sent:", smsData)
+    // Placeholder for SMS integration
+    console.log("📲 SMS would be sent:", smsData)
   } catch (error) {
-    console.error("Error sending SMS:", error)
+    console.error("❌ Error sending SMS:", error)
   }
 }

@@ -10,7 +10,7 @@ export default function AllArticlesPage() {
   const { data: articles, isLoading } = useAllArticles()
 
   return (
-    <div className="max-w-4xl mx-auto py-10 space-y-6">
+    <div className="max-w-4xl mx-auto pb-10 pt-24 space-y-6">
       <h1 className="text-3xl font-bold mb-4 text-center">All Help Articles</h1>
 
       <Card>
