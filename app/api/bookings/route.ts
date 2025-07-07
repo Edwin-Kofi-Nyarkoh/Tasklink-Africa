@@ -74,8 +74,16 @@ export async function POST(request: NextRequest) {
       totalAmount,
     } = body;
 
+    // Validate and parse scheduledDate
+    let parsedScheduledDate = new Date(scheduledDate);
+    if (!scheduledDate || isNaN(parsedScheduledDate.getTime())) {
+      return NextResponse.json(
+        { error: "Invalid or missing scheduledDate" },
+        { status: 400 }
+      );
+    }
+
     const ticketNumber = generateTicketNumber();
-    console.log("Generated ticket number:", ticketNumber);
 
     const booking = await prisma.booking.create({
       data: {
@@ -86,7 +94,7 @@ export async function POST(request: NextRequest) {
         description: jobDescription,
         customerAddress: contactInfo.address,
         customerPhone: contactInfo.phone,
-        scheduledDate: new Date(scheduledDate),
+        scheduledDate: parsedScheduledDate,
         estimatedHours,
         totalAmount,
         ticketNumber: ticketNumber,
@@ -125,7 +133,7 @@ export async function POST(request: NextRequest) {
         },
         {
           bookingId: booking.id,
-          userId: booking.workerId,
+          userId: booking.worker.userId, // FIX: use worker.userId, not workerId
           ticketNumber: booking.ticketNumber,
           qrCode: workerQRCode,
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours

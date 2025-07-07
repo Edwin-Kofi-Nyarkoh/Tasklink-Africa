@@ -90,8 +90,8 @@ export function BookingCheckout() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: finalTotal,
-          bookingIds: bookings.map((b) => b.id),
+          amount: 0.01,
+          bookingId: bookings.map((b) => b.id),
           email: session.user?.email,
         }),
       });
@@ -102,7 +102,7 @@ export function BookingCheckout() {
 
       const paymentData = await paymentResponse.json();
 
-      // Clear cart and redirect to payment
+      // Clear cart and redirect to payment authorization URL
       clearItems();
 
       toast({
@@ -112,7 +112,11 @@ export function BookingCheckout() {
         } created. Redirecting to payment...`,
       });
 
-      router.push("/dashboard");
+      if (paymentData.authorization_url) {
+        window.location.href = paymentData.authorization_url;
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error) {
       console.error("Checkout error:", error);
       toast({
