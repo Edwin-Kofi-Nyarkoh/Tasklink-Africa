@@ -155,9 +155,6 @@ importers:
       nodemailer:
         specifier: latest
         version: 7.0.3
-      prisma:
-        specifier: latest
-        version: 6.10.1(typescript@5.8.3)
       qrcode:
         specifier: latest
         version: 1.5.4
@@ -216,6 +213,9 @@ importers:
       postcss:
         specifier: ^8.5
         version: 8.5.6
+      prisma:
+        specifier: latest
+        version: 6.10.1(typescript@5.8.3)
       tailwindcss:
         specifier: ^3.4.17
         version: 3.4.17

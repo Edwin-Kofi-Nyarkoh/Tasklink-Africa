@@ -69,8 +69,8 @@ export const useHelpSearch = (query: string) => {
   return useQuery({
     queryKey: ["help", query],
     queryFn: async () => {
-      const res = await fetch(`/api/help?query=${encodeURIComponent(query)}`)
-      return res.json()
+      const {data} = await api.get(`/help?query=${encodeURIComponent(query)}`)
+      return data
     },
     enabled: query.length > 2,
   })
@@ -80,8 +80,8 @@ export const useAllArticles = () => {
   return useQuery({
     queryKey: ["help", "articles"],
     queryFn: async () => {
-      const res = await fetch("/api/help/articles")
-      return res.json()
+      const {data} = await api.get("/help/articles")
+      return data
     },
   })
 }
@@ -90,8 +90,9 @@ export const usePopularArticles = () => {
   return useQuery({
     queryKey: ["help", "popular"],
     queryFn: async () => {
-      const res = await fetch("/api/help/articles/popular")
-      return res.json()
+      const {data} = await api.get("/help/articles/popular")
+      console.log("Popular articles fetched:", data)
+      return data
     },
   })
 }

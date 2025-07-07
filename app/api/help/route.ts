@@ -69,7 +69,6 @@ export async function GET(req: Request) {
         { content: { contains: query, mode: "insensitive" } },
       ],
     },
-    take: 10,
   })
 
   return NextResponse.json(filteredArticles)

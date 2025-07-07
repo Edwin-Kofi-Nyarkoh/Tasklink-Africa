@@ -1,19 +1,39 @@
+"use client"
+
+import { useParams } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
 import { notFound } from "next/navigation"
+import { useEffect, useState } from "react"
 
-export async function generateStaticParams() {
-  // Skip this for now or use SSG if needed
-  return []
-}
+export default function ArticlePage() {
+  const params = useParams()
+  const id = typeof params.id === "string" ? params.id : Array.isArray(params.id) ? params.id[0] : ""
 
-async function getArticle(id: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/help/article/${id}`)
-  if (!res.ok) return null
-  return res.json()
-}
+  const [validId, setValidId] = useState<string | null>(null)
 
-export default async function ArticlePage({ params }: { params: { id: string } }) {
-  const article = await getArticle(params.id)
-  if (!article) return notFound()
+  useEffect(() => {
+    if (id) {
+      setValidId(id)
+    }
+  }, [id])
+
+  const { data: article, isLoading, isError } = useQuery({
+    queryKey: ["help", "article", validId],
+    enabled: !!validId,
+    queryFn: async () => {
+      const res = await fetch(`/api/help/articles/${validId}`)
+      if (!res.ok) throw new Error("Not found")
+      return res.json()
+    },
+  })
+
+  if (isLoading) {
+    return <div className="p-6 text-center">Loading article...</div>
+  }
+
+  if (isError || !article) {
+    return notFound()
+  }
 
   return (
     <div className="max-w-3xl mx-auto py-10 space-y-6">
