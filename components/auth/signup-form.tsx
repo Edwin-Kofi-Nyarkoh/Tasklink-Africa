@@ -1,20 +1,26 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Separator } from "@/components/ui/separator"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle } from "lucide-react"
-import { FcGoogle } from "react-icons/fc"
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  User,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
 
 export function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -22,55 +28,55 @@ export function SignUpForm() {
     email: "",
     password: "",
     confirmPassword: "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [acceptTerms, setAcceptTerms] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
-  const router = useRouter()
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
   const validateForm = () => {
     if (!formData.name.trim()) {
-      setError("Name is required")
-      return false
+      setError("Name is required");
+      return false;
     }
     if (!formData.email.trim()) {
-      setError("Email is required")
-      return false
+      setError("Email is required");
+      return false;
     }
     if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters")
-      return false
+      setError("Password must be at least 6 characters");
+      return false;
     }
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match")
-      return false
+      setError("Passwords do not match");
+      return false;
     }
     if (!acceptTerms) {
-      setError("You must accept the terms and conditions")
-      return false
+      setError("You must accept the terms and conditions");
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
-    setSuccess("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    setSuccess("");
 
     if (!validateForm()) {
-      setIsLoading(false)
-      return
+      setIsLoading(false);
+      return;
     }
 
     try {
@@ -84,62 +90,68 @@ export function SignUpForm() {
           email: formData.email,
           password: formData.password,
         }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Registration failed")
+        throw new Error(data.error || "Registration failed");
       }
 
-      setSuccess("Account created successfully! Signing you in...")
+      setSuccess("Account created successfully! Signing you in...");
 
       // Auto sign in after successful registration
-      setTimeout(async () => {
-        const result = await signIn("credentials", {
-          email: formData.email,
-          password: formData.password,
-          redirect: false,
-        })
+      const result = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
 
-        if (result?.ok) {
-          router.push("/dashboard")
-          router.refresh()
-        }
-      }, 1000)
+      if (result?.ok) {
+        router.push("/dashboard");
+        router.refresh();
+      }
     } catch (error: any) {
       if (error.message.includes("OAUTH_ACCOUNT_EXISTS")) {
-        setError("An account with this email already exists using Google. Please sign in with Google instead.")
+        setError(
+          "An account with this email already exists using Google. Please sign in with Google instead."
+        );
       } else if (error.message.includes("already exists")) {
-        setError("An account with this email already exists. Please sign in instead.")
+        setError(
+          "An account with this email already exists. Please sign in instead."
+        );
       } else {
-        setError(error.message || "Registration failed. Please try again.")
+        setError(error.message || "Registration failed. Please try again.");
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignUp = async () => {
-    setIsLoading(true)
-    setError("")
+    setIsLoading(true);
+    setError("");
 
     try {
       await signIn("google", {
         callbackUrl: "/dashboard",
-      })
+      });
     } catch (error) {
-      setError("Failed to sign up with Google. Please try again.")
-      setIsLoading(false)
+      setError("Failed to sign up with Google. Please try again.");
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <Card className="w-full max-w-md pt-24">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Create account</CardTitle>
-        <CardDescription className="text-center">Join TaskLink to find trusted professionals</CardDescription>
-      </CardHeader>
+    <Card className="border-none shadow-none">
+      {/* <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-center">
+          Create account
+        </CardTitle>
+        <CardDescription className="text-center">
+          Join TaskLink to find trusted professionals
+        </CardDescription>
+      </CardHeader> */}
       <CardContent className="space-y-4">
         {error && (
           <Alert variant="destructive">
@@ -155,7 +167,7 @@ export function SignUpForm() {
           </Alert>
         )}
 
-        <Button
+        {/* <Button
           type="button"
           variant="outline"
           className="w-full bg-transparent"
@@ -171,9 +183,11 @@ export function SignUpForm() {
             <Separator className="w-full" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
+            <span className="bg-background px-2 text-muted-foreground">
+              Or continue with email
+            </span>
           </div>
-        </div>
+        </div> */}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -295,18 +309,27 @@ export function SignUpForm() {
             </Label>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading || !acceptTerms}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isLoading || !acceptTerms}
+          >
             {isLoading ? "Creating account..." : "Create Account"}
           </Button>
         </form>
 
         <div className="text-center text-sm">
-          <span className="text-muted-foreground">Already have an account? </span>
-          <Link href="/auth/signin" className="text-primary hover:underline font-medium">
+          <span className="text-muted-foreground">
+            Already have an account?{" "}
+          </span>
+          <Link
+            href="/auth/signin"
+            className="text-primary hover:underline font-medium"
+          >
             Sign in
           </Link>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
