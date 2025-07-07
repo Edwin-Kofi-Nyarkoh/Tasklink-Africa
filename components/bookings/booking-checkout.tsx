@@ -1,36 +1,36 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useBookingStore } from "@/lib/store"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { CreditCard, User, DollarSign } from "lucide-react"
-import { formatCurrency } from "@/lib/utils"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { useToast } from "@/hooks/use-toast"
+import { useState } from "react";
+import { useBookingStore } from "@/lib/store";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { CreditCard, User, DollarSign } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 export function BookingCheckout() {
-  const { items, getTotalAmount, clearItems } = useBookingStore()
-  const { data: session } = useSession()
-  const router = useRouter()
-  const { toast } = useToast()
+  const { items, getTotalAmount, clearItems } = useBookingStore();
+  const { data: session } = useSession();
+  const router = useRouter();
+  const { toast } = useToast();
 
-  const [isProcessing, setIsProcessing] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false);
   const [contactInfo, setContactInfo] = useState({
     phone: "",
     address: "",
     specialInstructions: "",
-  })
+  });
 
-  const totalAmount = getTotalAmount()
-  const serviceFee = totalAmount * 0.05 // 5% service fee
-  const finalTotal = totalAmount + serviceFee
+  const totalAmount = getTotalAmount();
+  const serviceFee = totalAmount * 0.05; // 5% service fee
+  const finalTotal = totalAmount + serviceFee;
 
   const handleCheckout = async () => {
     if (!session) {
@@ -38,9 +38,9 @@ export function BookingCheckout() {
         title: "Please sign in",
         description: "You need to be signed in to complete booking.",
         variant: "destructive",
-      })
-      router.push("/auth/signin")
-      return
+      });
+      router.push("/auth/signin");
+      return;
     }
 
     if (!contactInfo.phone || !contactInfo.address) {
@@ -48,11 +48,11 @@ export function BookingCheckout() {
         title: "Missing information",
         description: "Please provide your phone number and address.",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setIsProcessing(true)
+    setIsProcessing(true);
 
     try {
       // Create bookings for each item
@@ -72,16 +72,16 @@ export function BookingCheckout() {
             scheduledDate: item.scheduledDate,
             contactInfo,
           }),
-        })
+        });
 
         if (!response.ok) {
-          throw new Error(`Failed to create booking for ${item.workerName}`)
+          throw new Error(`Failed to create booking for ${item.workerName}`);
         }
 
-        return response.json()
-      })
+        return response.json();
+      });
 
-      const bookings = await Promise.all(bookingPromises)
+      const bookings = await Promise.all(bookingPromises);
 
       // Initialize payment
       const paymentResponse = await fetch("/api/payment/initialize", {
@@ -94,37 +94,37 @@ export function BookingCheckout() {
           bookingIds: bookings.map((b) => b.id),
           email: session.user?.email,
         }),
-      })
+      });
 
       if (!paymentResponse.ok) {
-        throw new Error("Failed to initialize payment")
+        throw new Error("Failed to initialize payment");
       }
 
-      const paymentData = await paymentResponse.json()
+      const paymentData = await paymentResponse.json();
 
       // Clear cart and redirect to payment
-      clearItems()
+      clearItems();
 
       toast({
         title: "Bookings created successfully!",
-        description: `${items.length} booking${items.length > 1 ? "s" : ""} created. Redirecting to payment...`,
-      })
+        description: `${items.length} booking${
+          items.length > 1 ? "s" : ""
+        } created. Redirecting to payment...`,
+      });
 
-      // In a real app, redirect to payment gateway
-      setTimeout(() => {
-        router.push("/dashboard")
-      }, 2000)
+      router.push("/dashboard");
     } catch (error) {
-      console.error("Checkout error:", error)
+      console.error("Checkout error:", error);
       toast({
         title: "Checkout failed",
-        description: "There was an error processing your bookings. Please try again.",
+        description:
+          "There was an error processing your bookings. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
+  };
 
   if (items.length === 0) {
     return (
@@ -133,7 +133,7 @@ export function BookingCheckout() {
           <p className="text-muted-foreground">No items in cart</p>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -154,7 +154,9 @@ export function BookingCheckout() {
               type="tel"
               placeholder="+234 xxx xxx xxxx"
               value={contactInfo.phone}
-              onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
+              onChange={(e) =>
+                setContactInfo({ ...contactInfo, phone: e.target.value })
+              }
               required
             />
           </div>
@@ -165,7 +167,9 @@ export function BookingCheckout() {
               id="address"
               placeholder="Enter the address where services will be performed"
               value={contactInfo.address}
-              onChange={(e) => setContactInfo({ ...contactInfo, address: e.target.value })}
+              onChange={(e) =>
+                setContactInfo({ ...contactInfo, address: e.target.value })
+              }
               rows={3}
               required
             />
@@ -177,7 +181,12 @@ export function BookingCheckout() {
               id="instructions"
               placeholder="Any special instructions for the workers"
               value={contactInfo.specialInstructions}
-              onChange={(e) => setContactInfo({ ...contactInfo, specialInstructions: e.target.value })}
+              onChange={(e) =>
+                setContactInfo({
+                  ...contactInfo,
+                  specialInstructions: e.target.value,
+                })
+              }
               rows={2}
             />
           </div>
@@ -196,16 +205,23 @@ export function BookingCheckout() {
           {/* Items */}
           <div className="space-y-3">
             {items.map((item) => (
-              <div key={`${item.workerId}-${item.serviceId}`} className="flex justify-between items-start">
+              <div
+                key={`${item.workerId}-${item.serviceId}`}
+                className="flex justify-between items-start"
+              >
                 <div className="flex-1">
                   <p className="font-medium">{item.workerName}</p>
-                  <p className="text-sm text-muted-foreground">{item.serviceName}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {item.serviceName}
+                  </p>
                   <Badge variant="outline" className="mt-1">
                     {item.estimatedHours}h × {formatCurrency(item.hourlyRate)}
                   </Badge>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">{formatCurrency(item.hourlyRate * item.estimatedHours)}</p>
+                  <p className="font-medium">
+                    {formatCurrency(item.hourlyRate * item.estimatedHours)}
+                  </p>
                 </div>
               </div>
             ))}
@@ -235,10 +251,14 @@ export function BookingCheckout() {
             onClick={handleCheckout}
             className="w-full"
             size="lg"
-            disabled={isProcessing || !contactInfo.phone || !contactInfo.address}
+            disabled={
+              isProcessing || !contactInfo.phone || !contactInfo.address
+            }
           >
             <CreditCard className="w-4 h-4 mr-2" />
-            {isProcessing ? "Processing..." : `Pay ${formatCurrency(finalTotal)}`}
+            {isProcessing
+              ? "Processing..."
+              : `Pay ${formatCurrency(finalTotal)}`}
           </Button>
 
           <p className="text-xs text-muted-foreground text-center">
@@ -247,5 +267,5 @@ export function BookingCheckout() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

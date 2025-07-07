@@ -210,6 +210,9 @@ importers:
       '@types/nodemailer':
         specifier: ^6.4.17
         version: 6.4.17
+      '@types/qrcode':
+        specifier: ^1.5.5
+        version: 1.5.5
       '@types/react':
         specifier: ^18
         version: 18.3.23
@@ -1118,6 +1121,9 @@ packages:
 
   '@types/prop-types@15.7.15':
     resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
+
+  '@types/qrcode@1.5.5':
+    resolution: {integrity: sha512-CdfBi/e3Qk+3Z/fXYShipBT13OJ2fDO2Q2w5CIP5anLTLIndQG9z6P1cnm+8zCWSpm5dnxMFd/uREtb0EXuQzg==}
 
   '@types/react-dom@18.3.7':
     resolution: {integrity: sha512-MEe3UeoENYVFXzoXEWsvcpg6ZvlrFNlOQ7EOsvhI3CfAXwzPfO8Qwuxd40nepsYKqyyVQnTdEfv68q91yLcKrQ==}
@@ -3063,6 +3069,10 @@ snapshots:
       '@types/node': 22.15.33
 
   '@types/prop-types@15.7.15': {}
+
+  '@types/qrcode@1.5.5':
+    dependencies:
+      '@types/node': 22.15.33
 
   '@types/react-dom@18.3.7(@types/react@18.3.23)':
     dependencies:

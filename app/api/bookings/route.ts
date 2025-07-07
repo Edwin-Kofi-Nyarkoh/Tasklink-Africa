@@ -1,26 +1,26 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { prisma } from "@/lib/prisma"
-import { authOptions } from "@/lib/auth"
-import { generateTicketNumber, generateQRCode } from "@/lib/utils"
-import { sendBookingEmail, sendBookingSMS } from "@/lib/notifications"
+import { type NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
+import { generateTicketNumber, generateQRCode } from "@/lib/utils";
+import { sendBookingEmail, sendBookingSMS } from "@/lib/notifications";
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url)
-    const status = searchParams.get("status")
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get("status");
 
     const where: any = {
       customerId: session.user.id,
-    }
+    };
 
     if (status) {
-      where.status = status
+      where.status = status;
     }
 
     const bookings = await prisma.booking.findMany({
@@ -43,50 +43,53 @@ export async function GET(request: NextRequest) {
       orderBy: {
         createdAt: "desc",
       },
-    })
+    });
 
-    return NextResponse.json(bookings)
+    return NextResponse.json(bookings);
   } catch (error) {
-    console.error("Error fetching bookings:", error)
-    return NextResponse.json({ error: "Failed to fetch bookings" }, { status: 500 })
+    console.error("Error fetching bookings:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch bookings" },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json()
+    const body = await request.json();
     const {
       workerId,
       serviceId,
-      title,
-      description,
-      customerAddress,
-      customerPhone,
+      jobTitle,
+      jobDescription,
+      contactInfo,
       scheduledDate,
       estimatedHours,
       totalAmount,
-    } = body
+    } = body;
 
-    const ticketNumber = generateTicketNumber()
+    const ticketNumber = generateTicketNumber();
+    console.log("Generated ticket number:", ticketNumber);
 
     const booking = await prisma.booking.create({
       data: {
         customerId: session.user.id,
         workerId,
         serviceId,
-        title,
-        description,
-        customerAddress,
-        customerPhone,
+        title: jobTitle,
+        description: jobDescription,
+        customerAddress: contactInfo.address,
+        customerPhone: contactInfo.phone,
         scheduledDate: new Date(scheduledDate),
         estimatedHours,
         totalAmount,
-        ticketNumber,
+        ticketNumber: ticketNumber,
       },
       include: {
         customer: true,
@@ -97,7 +100,7 @@ export async function POST(request: NextRequest) {
         },
         service: true,
       },
-    })
+    });
 
     // Generate QR codes for both customer and worker
     const qrCodeData = {
@@ -105,10 +108,10 @@ export async function POST(request: NextRequest) {
       ticketNumber: booking.ticketNumber,
       customerId: booking.customerId,
       workerId: booking.workerId,
-    }
+    };
 
-    const customerQRCode = await generateQRCode(JSON.stringify(qrCodeData))
-    const workerQRCode = await generateQRCode(JSON.stringify(qrCodeData))
+    const customerQRCode = await generateQRCode(JSON.stringify(qrCodeData));
+    const workerQRCode = await generateQRCode(JSON.stringify(qrCodeData));
 
     // Create tickets for both customer and worker
     await prisma.ticket.createMany({
@@ -128,15 +131,18 @@ export async function POST(request: NextRequest) {
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
         },
       ],
-    })
+    });
 
     // Send notifications
-    await sendBookingEmail(booking)
-    await sendBookingSMS(booking)
+    await sendBookingEmail(booking);
+    await sendBookingSMS(booking);
 
-    return NextResponse.json(booking)
+    return NextResponse.json(booking);
   } catch (error) {
-    console.error("Error creating booking:", error)
-    return NextResponse.json({ error: "Failed to create booking" }, { status: 500 })
+    console.error("Error creating booking:", error);
+    return NextResponse.json(
+      { error: "Failed to create booking" },
+      { status: 500 }
+    );
   }
 }

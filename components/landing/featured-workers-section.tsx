@@ -1,11 +1,12 @@
-"use client"
+"use client";
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Star, MapPin, Clock, CheckCircle } from "lucide-react"
-import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Star, MapPin, Clock, CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
 
 export function FeaturedWorkersSection() {
   const featuredWorkers = [
@@ -51,26 +52,35 @@ export function FeaturedWorkersSection() {
       completedJobs: 73,
       services: ["Plumbing", "Pipe Repair", "Installation"],
     },
-  ]
+  ];
 
   return (
     <section className="py-20 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">Featured Professionals</h2>
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
+            Featured Professionals
+          </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Meet some of our top-rated professionals who consistently deliver excellent service.
+            Meet some of our top-rated professionals who consistently deliver
+            excellent service.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {featuredWorkers.map((worker) => (
-            <Card key={worker.id} className="group hover:shadow-xl transition-all duration-300">
+            <Card
+              key={worker.id}
+              className="group hover:shadow-xl transition-all duration-300"
+            >
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4 mb-4">
                   <div className="relative">
                     <Avatar className="w-16 h-16">
-                      <AvatarImage src={worker.image || "/placeholder.svg"} alt={worker.name} />
+                      <AvatarImage
+                        src={worker.image || "/placeholder.svg"}
+                        alt={worker.name}
+                      />
                       <AvatarFallback>
                         {worker.name
                           .split(" ")
@@ -90,7 +100,9 @@ export function FeaturedWorkersSection() {
                     <div className="flex items-center space-x-1 mt-1">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                       <span className="font-medium">{worker.rating}</span>
-                      <span className="text-muted-foreground text-sm">({worker.reviews} reviews)</span>
+                      <span className="text-muted-foreground text-sm">
+                        ({worker.reviews} reviews)
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -104,7 +116,9 @@ export function FeaturedWorkersSection() {
                     <Clock className="w-4 h-4 mr-2" />
                     Responds {worker.responseTime}
                   </div>
-                  <div className="text-lg font-semibold text-primary">₦{worker.hourlyRate.toLocaleString()}/hour</div>
+                  <div className="text-lg font-semibold text-primary">
+                    ₦{worker.hourlyRate.toLocaleString()}/hour
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -127,7 +141,17 @@ export function FeaturedWorkersSection() {
                     </Button>
                   </Link>
                   <Link href={`/workers/${worker.id}/book`} className="flex-1">
-                    <Button className="w-full">Hire Now</Button>
+                    <Button
+                      className="w-full"
+                      onClick={() => {
+                        toast.success("Worker booked successfully!", {
+                          description:
+                            "You can now visit your bookings to proceed.",
+                        });
+                      }}
+                    >
+                      Book Worker
+                    </Button>
                   </Link>
                 </div>
               </CardContent>
@@ -144,5 +168,5 @@ export function FeaturedWorkersSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
