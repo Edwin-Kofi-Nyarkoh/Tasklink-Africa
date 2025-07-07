@@ -99,13 +99,14 @@ export async function POST(request: NextRequest) {
         totalAmount,
         ticketNumber: ticketNumber,
       },
+    });
+
+    // Fetch full booking with all relations for notifications
+    const fullBooking = await prisma.booking.findUnique({
+      where: { id: booking.id },
       include: {
         customer: true,
-        worker: {
-          include: {
-            user: true,
-          },
-        },
+        worker: { include: { user: true } },
         service: true,
       },
     });
@@ -113,39 +114,48 @@ export async function POST(request: NextRequest) {
     // Generate QR codes for both customer and worker
     const qrCodeData = {
       bookingId: booking.id,
-      ticketNumber: booking.ticketNumber,
-      customerId: booking.customerId,
-      workerId: booking.workerId,
+      ticketNumber: ticketNumber,
+      customerId: session.user.id,
+      workerId,
     };
 
     const customerQRCode = await generateQRCode(JSON.stringify(qrCodeData));
     const workerQRCode = await generateQRCode(JSON.stringify(qrCodeData));
 
     // Create tickets for both customer and worker
+    const workerUserId = fullBooking?.worker?.userId ?? "";
+    if (!workerUserId) {
+      return NextResponse.json(
+        { error: "Worker userId not found" },
+        { status: 400 }
+      );
+    }
     await prisma.ticket.createMany({
       data: [
         {
           bookingId: booking.id,
-          userId: booking.customerId,
-          ticketNumber: booking.ticketNumber,
+          userId: session.user.id,
+          ticketNumber: ticketNumber,
           qrCode: customerQRCode,
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
         },
         {
           bookingId: booking.id,
-          userId: booking.worker.userId, // FIX: use worker.userId, not workerId
-          ticketNumber: booking.ticketNumber,
+          userId: workerUserId,
+          ticketNumber: ticketNumber,
           qrCode: workerQRCode,
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
         },
       ],
     });
 
-    // Send notifications
-    await sendBookingEmail(booking);
-    await sendBookingSMS(booking);
+    // Send notifications with full booking object
+    if (fullBooking) {
+      await sendBookingEmail(fullBooking);
+      await sendBookingSMS(fullBooking);
+    }
 
-    return NextResponse.json(booking);
+    return NextResponse.json(fullBooking);
   } catch (error) {
     console.error("Error creating booking:", error);
     return NextResponse.json(
