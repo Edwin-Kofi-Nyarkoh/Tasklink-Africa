@@ -10,6 +10,13 @@ interface WorkerFilters {
   serviceId?: string[] // or string if you support only one
 }
 
+export interface BlogFilters {
+  category?: string
+  author?: string
+  search?: string       // searches in title or excerpt
+  page?: number         // for pagination
+  limit?: number        // default: 10 or your preferred page size
+}
 
 // Workers queries
 export const useWorkers = (filters?: WorkerFilters) => {
@@ -31,6 +38,61 @@ export const useWorker = (id: string) => {
       return data
     },
     enabled: !!id,
+  })
+}
+
+//blog queries
+// Fetch all blog posts with filters
+export const useBlogPosts = (filter?: BlogFilters) => {
+  return useQuery({
+    queryKey: ["blogPosts", filter],
+    queryFn: async () => {
+      const { data } = await api.get("/blog", { params: filter })
+      return data
+    }
+  })
+}
+
+// Fetch single post by ID
+export const useBlogPost = (id: string) => {
+  return useQuery({
+    queryKey: ["blogPosts", id],
+    queryFn: async () => {
+      const { data } = await api.get(`/blog/${id}`)
+      return data
+    },
+    enabled: !!id
+  })
+}
+
+export const useHelpSearch = (query: string) => {
+  return useQuery({
+    queryKey: ["help", query],
+    queryFn: async () => {
+      const res = await fetch(`/api/help?query=${encodeURIComponent(query)}`)
+      return res.json()
+    },
+    enabled: query.length > 2,
+  })
+}
+
+export const useAllArticles = () => {
+  return useQuery({
+    queryKey: ["help", "articles"],
+    queryFn: async () => {
+      const res = await fetch("/api/help/articles")
+      return res.json()
+    },
+  })
+}
+
+export const usePopularArticles = () => {
+  return useQuery({
+    queryKey: ["help", "popular"],
+    queryFn: async () => {
+      const res = await fetch("/api/help/articles/popular")
+      return res.json()
+    },
   })
 }
 

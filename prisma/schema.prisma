@@ -215,6 +215,38 @@ model Ticket {
   @@map("tickets")
 }
 
+model Blog {
+  id          String   @id @default(cuid())
+  title       String
+  excerpt     String
+  content     String
+  image       String
+  category    String
+  author      String
+  publishedAt DateTime @default(now())
+  readTime    String
+
+  @@map("blogs")
+}
+
+model HelpArticle {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  popular   Boolean
+  purpose   ArticlePurposes  @default(STARTERS)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+enum ArticlePurposes {
+  STARTERS
+  CUSTOMERS
+  PROFESSIONALS
+  PAYMENTS
+}
+
 enum UserRole {
   CUSTOMER
   WORKER

@@ -16,7 +16,6 @@ import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import {
   Menu,
-  Search,
   ShoppingCart,
   Settings,
   LogOut,
@@ -34,6 +33,7 @@ import { useBookingStore } from "@/lib/store"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { ModeToggle } from "@/components/ui/mode-toggle"
 import { useLanguage } from "./language-provider"
+
 export function Navbar() {
   const { data: session } = useSession()
   const [isOpen, setIsOpen] = useState(false)
@@ -59,22 +59,20 @@ export function Navbar() {
   ]
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 overflow-x-hidden">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <div className="flex items-center flex-shrink-0">
             <Link href="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">TL</span>
               </div>
-              <span className=" sm:hidden font-bold text-lg sm:text-xl text-gray-900 dark:text-white">
+              <span className="sm:hidden font-bold text-lg sm:text-xl text-gray-900 dark:text-white">
                 TaskLink
               </span>
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-6">
             {navigation.map((item) => (
               <Link
@@ -87,18 +85,12 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Right Side - Mobile Optimized */}
           <div className="flex items-center space-x-2">
-            {/* Desktop Only Elements */}
             <div className="hidden lg:flex items-center space-x-3">
-              {/* <Button variant="ghost" size="sm">
-                <Search className="h-4 w-4" />
-              </Button> */}
               <LanguageSwitcher />
               <ModeToggle />
             </div>
 
-            {/* Cart - Always Visible */}
             <Link href="/bookings/cart">
               <Button variant="ghost" size="sm" className="relative">
                 <ShoppingCart className="h-4 w-4" />
@@ -113,7 +105,6 @@ export function Navbar() {
               </Button>
             </Link>
 
-            {/* Desktop User Menu */}
             {session ? (
               <div className="hidden lg:block">
                 <DropdownMenu>
@@ -162,7 +153,6 @@ export function Navbar() {
               </div>
             )}
 
-            {/* Mobile Menu - Always Visible on Small Screens */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm" className="lg:hidden p-2">
@@ -170,13 +160,12 @@ export function Navbar() {
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[350px]">
+              <SheetContent side="right" className="w-[300px] sm:w-[350px] overflow-y-auto">
                 <SheetHeader>
                   <SheetTitle className="text-left">Menu</SheetTitle>
                 </SheetHeader>
 
                 <div className="flex flex-col space-y-3 mt-6">
-                  {/* User Info Section */}
                   {session && (
                     <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <Avatar className="h-10 w-10">
@@ -190,7 +179,6 @@ export function Navbar() {
                     </div>
                   )}
 
-                  {/* Navigation Links */}
                   <div className="space-y-1">
                     <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3">
                       {t("nav.navigation")}
@@ -208,7 +196,6 @@ export function Navbar() {
                     ))}
                   </div>
 
-                  {/* User Account Links */}
                   {session && (
                     <div className="space-y-1">
                       <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3">
@@ -238,7 +225,6 @@ export function Navbar() {
                     </div>
                   )}
 
-                  {/* Auth Buttons for Non-Authenticated Users */}
                   {!session && (
                     <div className="space-y-3 pt-4 border-t">
                       <Button variant="outline" className="w-full justify-start bg-transparent" asChild>
@@ -256,7 +242,6 @@ export function Navbar() {
                     </div>
                   )}
 
-                  {/* Mobile Settings */}
                   <div className="space-y-3 pt-4 border-t">
                     <div className="flex items-center justify-between px-3">
                       <span className="text-sm font-medium">{t("nav.language")}</span>

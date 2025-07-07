@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
+import { usePopularArticles, useAllArticles, useHelpSearch } from "@/lib/queries"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -10,6 +12,10 @@ import { Search, MessageCircle, Phone, Mail, Book, Users, Shield, CreditCard } f
 
 export function HelpCenter() {
   const [searchQuery, setSearchQuery] = useState("")
+
+  const { data: searchResults } = useHelpSearch(searchQuery)
+  const { data: popularArticles = [] } = usePopularArticles()
+  const { data: allArticles = [] } = useAllArticles()
 
   const categories = [
     {
@@ -46,35 +52,22 @@ export function HelpCenter() {
     },
   ]
 
-  const popularArticles = [
-    "How to book a service",
-    "How to become a verified professional",
-    "Payment methods and security",
-    "Cancellation and refund policy",
-    "How to leave a review",
-    "Troubleshooting common issues",
-  ]
-
   const faqs = [
     {
       question: "How do I book a service?",
-      answer:
-        "Simply search for the service you need, browse available professionals, select one that fits your requirements, and book directly through our platform.",
+      answer: "Simply search for the service you need, browse available professionals, select one that fits your requirements, and book directly through our platform.",
     },
     {
       question: "Is my payment secure?",
-      answer:
-        "Yes, all payments are processed through secure, encrypted channels. We use industry-standard security measures to protect your financial information.",
+      answer: "Yes, all payments are processed through secure, encrypted channels.",
     },
     {
       question: "What if I'm not satisfied with the service?",
-      answer:
-        "We offer a satisfaction guarantee. Contact our support team within 24 hours if you're not happy with the service, and we'll work to resolve the issue.",
+      answer: "We offer a satisfaction guarantee. Contact support within 24 hours to resolve issues.",
     },
     {
       question: "How do I become a professional on TaskLink?",
-      answer:
-        "Click 'Join as a Professional', fill out the application form, complete our verification process, and start receiving bookings within 24-48 hours.",
+      answer: "Click 'Join as a Professional', fill out the form, and complete our verification process.",
     },
   ]
 
@@ -93,17 +86,40 @@ export function HelpCenter() {
               className="pl-10"
             />
           </div>
+          {searchQuery.length > 2 && searchResults?.length > 0 && (
+            <div className="mt-4 text-left">
+              <p className="text-sm text-muted-foreground mb-2">Search Results:</p>
+              <div className="space-y-1">
+                {searchResults.map((article: any) => (
+                  <Link
+                    key={article.id}
+                    href={`/help/articles/${article.id}`}
+                    className="block hover:underline text-primary"
+                  >
+                    {article.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
+
+      {/* Filter Tabs (UI only for now) */}
+      <div className="flex flex-wrap gap-2">
+        {["All", "Getting Started", "For Customers", "For Professionals", "Payments & Billing"].map((tab, index) => (
+          <Button key={index} variant="outline" className="capitalize">
+            {tab}
+          </Button>
+        ))}
+      </div>
 
       {/* Categories */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {categories.map((category, index) => (
           <Card key={index} className="cursor-pointer hover:shadow-lg transition-shadow">
             <CardContent className="p-6 text-center">
-              <div
-                className={`w-12 h-12 ${category.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}
-              >
+              <div className={`w-12 h-12 ${category.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
                 <category.icon className={`w-6 h-6 ${category.color}`} />
               </div>
               <h3 className="font-semibold mb-2">{category.title}</h3>
@@ -121,14 +137,25 @@ export function HelpCenter() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {popularArticles.map((article, index) => (
-              <div key={index} className="p-3 hover:bg-muted/50 rounded-lg cursor-pointer transition-colors">
-                <p className="text-sm">{article}</p>
-              </div>
+            {popularArticles.map((article: any) => (
+              <Link
+                key={article.id}
+                href={`/help/articles/${article.id}`}
+                className="block p-3 hover:bg-muted/50 rounded-lg transition-colors"
+              >
+                <p className="text-sm">{article.title}</p>
+              </Link>
             ))}
           </div>
         </CardContent>
       </Card>
+
+      {/* View All Articles */}
+      <div className="text-center">
+        <Link href="/help/articles">
+          <Button>View All Articles</Button>
+        </Link>
+      </div>
 
       {/* FAQs */}
       <Card>
@@ -154,31 +181,25 @@ export function HelpCenter() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 border rounded-lg">
-              <MessageCircle className="w-8 h-8 text-primary mx-auto mb-2" />
-              <h4 className="font-semibold mb-2">Live Chat</h4>
-              <p className="text-sm text-muted-foreground mb-3">Chat with our support team</p>
-              <Button size="sm">Start Chat</Button>
-            </div>
-            <div className="text-center p-4 border rounded-lg">
-              <Mail className="w-8 h-8 text-primary mx-auto mb-2" />
-              <h4 className="font-semibold mb-2">Email Support</h4>
-              <p className="text-sm text-muted-foreground mb-3">support@tasklinkafrica.com</p>
-              <Button size="sm" variant="outline" className="bg-transparent">
-                Send Email
-              </Button>
-            </div>
-            <div className="text-center p-4 border rounded-lg">
-              <Phone className="w-8 h-8 text-primary mx-auto mb-2" />
-              <h4 className="font-semibold mb-2">Phone Support</h4>
-              <p className="text-sm text-muted-foreground mb-3">+234 800 TASKLINK</p>
-              <Button size="sm" variant="outline" className="bg-transparent">
-                Call Now
-              </Button>
-            </div>
+            <SupportCard icon={MessageCircle} title="Live Chat" subtitle="Chat with our support team" button="Start Chat" />
+            <SupportCard icon={Mail} title="Email Support" subtitle="support@tasklinkafrica.com" button="Send Email" />
+            <SupportCard icon={Phone} title="Phone Support" subtitle="+234 800 TASKLINK" button="Call Now" />
           </div>
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+function SupportCard({ icon: Icon, title, subtitle, button }: any) {
+  return (
+    <div className="text-center p-4 border rounded-lg">
+      <Icon className="w-8 h-8 text-primary mx-auto mb-2" />
+      <h4 className="font-semibold mb-2">{title}</h4>
+      <p className="text-sm text-muted-foreground mb-3">{subtitle}</p>
+      <Button size="sm" variant="outline" className="bg-transparent">
+        {button}
+      </Button>
     </div>
   )
 }
