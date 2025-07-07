@@ -155,9 +155,6 @@ importers:
       nodemailer:
         specifier: latest
         version: 7.0.5
-      prisma:
-        specifier: latest
-        version: 6.11.1(typescript@5.8.3)
       qrcode:
         specifier: latest
         version: 1.5.4
@@ -206,20 +203,13 @@ importers:
     devDependencies:
       '@types/node':
         specifier: ^22
-<<<<<<< HEAD
         version: 22.16.0
-      '@types/nodemailer':
-        specifier: ^6.4.17
-        version: 6.4.17
-=======
-        version: 22.15.33
       '@types/nodemailer':
         specifier: ^6.4.17
         version: 6.4.17
       '@types/qrcode':
         specifier: ^1.5.5
         version: 1.5.5
->>>>>>> 3e1d184e3acb2092a9d999e6ea1fd02a2d2988ba
       '@types/react':
         specifier: ^18
         version: 18.3.23
@@ -1120,9 +1110,6 @@ packages:
 
   '@types/node@22.16.0':
     resolution: {integrity: sha512-B2egV9wALML1JCpv3VQoQ+yesQKAmNMBIAY7OteVrikcOcAkWm+dGL6qpeCktPjAv6N1JLnhbNiqS35UpFyBsQ==}
-
-  '@types/nodemailer@6.4.17':
-    resolution: {integrity: sha512-I9CCaIp6DTldEg7vyUTZi8+9Vo0hi1/T8gv3C89yk1rSAAzoKQ8H8ki/jBYJSFoH/BisgLP8tkZMlQ91CIquww==}
 
   '@types/nodemailer@6.4.17':
     resolution: {integrity: sha512-I9CCaIp6DTldEg7vyUTZi8+9Vo0hi1/T8gv3C89yk1rSAAzoKQ8H8ki/jBYJSFoH/BisgLP8tkZMlQ91CIquww==}
@@ -3071,15 +3058,13 @@ snapshots:
 
   '@types/nodemailer@6.4.17':
     dependencies:
-
-      '@types/node': 22.15.33
-
+      '@types/node': 22.16.0
 
   '@types/prop-types@15.7.15': {}
 
   '@types/qrcode@1.5.5':
     dependencies:
-      '@types/node': 22.15.33
+      '@types/node': 22.16.0
 
   '@types/react-dom@18.3.7(@types/react@18.3.23)':
     dependencies:
